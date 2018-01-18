@@ -1,11 +1,11 @@
 <template>
   <v-app>
     <v-content>
-      <router-view/>
+      <v-container class="text-xs-center">
+        <img src="./Assets/Logo.png" />
+        <router-view />
+      </v-container>
     </v-content>
-    <v-footer fixed app>
-      <span>&copy; 2018</span>
-    </v-footer>
   </v-app>
 </template>
 
@@ -19,3 +19,7 @@ export default {
   },
 }
 </script>
+
+<style scoped>
+
+</style>

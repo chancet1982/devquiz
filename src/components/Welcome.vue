@@ -1,73 +1,118 @@
 <template>
   <v-container fluid>
-    <v-slide-y-transition mode="out-in">
-      <v-container fluid>
-        <v-layout row wrap>
-          <v-flex xs4>
-            <v-subheader>Enter your answer below</v-subheader>
-          </v-flex>
-          <v-flex xs8>
-            <v-text-field
-              name="answer"
-              label="And the answer is..."
-              id="answer"
-              required
-              v-model="answer"
-              :rules="[rules.required, rules.answer]"
-            ></v-text-field>
-          </v-flex>        
-          <v-flex xs4>
-            <v-subheader>Your name?</v-subheader>
-          </v-flex>
-          <v-flex xs8>
-            <v-text-field
-              name="name"
-              label="your name?"
-              id="name"
-              required
-              v-model="name"
-              :rules="[rules.required, rules.name]"
-            ></v-text-field>
-          </v-flex>
-          <v-flex xs4>
-            <v-subheader>Email address</v-subheader>
-          </v-flex>
-          <v-flex xs8>
-            <v-text-field
-              name="email"
-              label="Email address"
-              id="email"
-              required
-              v-model="email"
-              :rules="[rules.required, rules.email]"
-            ></v-text-field>
-          </v-flex>
-          <v-flex xs12>
-            <v-btn :disabled="!this.isFormValid" color="success" @click="saveAnswer()">Submit</v-btn>
-          </v-flex>
-        </v-layout>
-      </v-container>
-    </v-slide-y-transition>
+    <v-container fluid fill-height>
+      <v-layout column wrap v-show="answering" transition="slide-x-transition">
+        <v-flex xs12 v-show="countdown !== 0">
+          <VEmbed id="gist" :options="{ emoji: false }">
+            <p>https://gist.github.com/chancet1982/6b79e2bde10ce599e59db109c2920519.js</p>
+          </VEmbed>
+        </v-flex>
+        <v-flex xs12>
+          <v-stepper v-model="stepper">
+            <v-stepper-header>
+              <v-stepper-step step="1" :complete="this.answer !== ''">Your answer</v-stepper-step>
+              <v-divider></v-divider>
+              <v-stepper-step step="2" :complete="this.isFormValid">Your details</v-stepper-step>
+            </v-stepper-header>
+            <v-stepper-items>
+              <v-stepper-content step="1">
+                <v-card color="white" class="mb-5" height="200px">
+                    <v-layout row align-center>
+                      <v-flex xs8>
+                        <v-text-field
+                          name="answer"
+                          label="What is the output?"
+                          hint="write the values separated by commas"
+                          id="answer"
+                          required
+                          v-model="answer"
+                          ref="answer"
+                          :disabled="countdown === 0"
+                          :rules="[rules.required, rules.answer]"
+                        ></v-text-field>
+                      </v-flex>
+                      <v-flex xs4 class="text-xs-center">
+                        <v-progress-circular
+                          v-bind:size="150"
+                          v-bind:width="15"
+                          v-bind:rotate="270"
+                          v-bind:value="countdown"
+                          color="info"
+                        >
+                          {{countdown}}
+                        </v-progress-circular>              
+                      </v-flex>
+                    </v-layout>
+                </v-card>
+                <v-btn color="info" @click.native="stepper = 2">Continue</v-btn>
+              </v-stepper-content>
+              <v-stepper-content step="2">
+                <v-card color="white" class="mb-5" height="200px">
+                    <v-text-field
+                      name="name"
+                      label="Your name?"
+                      id="name"
+                      required
+                      v-model="name"
+                      :rules="[rules.required, rules.name]"
+                    ></v-text-field>
+                    <v-text-field
+                      name="email"
+                      label="Email address"
+                      id="email"
+                      required
+                      v-model="email"
+                      :rules="[rules.required, rules.email]"
+                    ></v-text-field>            
+                    <v-alert :type="snackbarType" :value="showSnackbar" transition="scale-transition">
+                      {{snackbarContent}}
+                    </v-alert>
+                </v-card>
+                <v-btn :disabled="!this.isFormValid" color="success" @click="submit()">Submit</v-btn>                  
+              </v-stepper-content>
+            </v-stepper-items>
+          </v-stepper>          
+        </v-flex>
+      </v-layout>
+      <v-layout column wrap v-show="!answering" align-center transition="slide-x-transition">
+        <v-card color="white" class="mb-5">
+          <v-card-title>
+            <h1>Answer and win a Raspbarry Pi</h1>
+          </v-card-title>
+          <v-card-text>
+              <p>Clicking the button below youll be presented with some code.</p>
+              <p>You'll have one minute to answer</p>
+              <v-btn color="info" @click="start()">Got it, lets go</v-btn>
+          </v-card-text>
+        </v-card>
+      </v-layout>
+    </v-container>
   </v-container>
 </template>
 
 <script>
-  import { required, between } from 'vuelidate/lib/validators'
+  import VEmbed from 'vue-embed'
+
   export default {
     name: 'Welcome',
+    components: {
+      VEmbed
+    },
     mounted() {
-      console.log(this.$localStorage.get('currentResults'));
-      //this.$localStorage.remove('currentResults');
+      this.quizResults = this.$localStorage.get('currentResults');
     },
     localStorage: {
       currentResults: {
-        type: Object,
+        type: Array,
       },
     },
     computed: {
+      showSnackbar(){
+        return this.snackbarContent.length > 0;
+      },
       isAnswerCorrect() {
-        const reg = /1,2,3,4,5,6/;
-        return this.answer.replace(/\s/g,'').match(reg) ? true : false;
+        const reg = /341325/;
+        return this.answer.replace(/\s|,|[|]/g,'').match(reg) ? true : false;
       },
       isNameValid() {
         return this.rules.required(this.name) && this.rules.name(this.name)
@@ -86,73 +131,78 @@
           name: this.name,
           email: this.email,
           answer: this.answer,
-          isAnswerCorrect: this.isAnswerCorrect
+          isAnswerCorrect: this.isAnswerCorrect,
+          timeLeft: this.countdown,
         }
       }
     },
     methods: {
-      saveAnswer() {
+      start() {
+        this.answering = true;
+        setTimeout(() => {
+          this.startCountdown();
+          this.$refs.answer.focus();
+        }, 1000);
+      },
+      startCountdown() {
+        setInterval(() => {
+          if (this.countdown === 0 || this.stepper === 2) {
+            return null;
+          }
+          this.countdown --;
+        }, 1000);
+      },
+      submit() {
         if (this.isMailUsed() == false) {
-          this.$localStorage.set('currentResults', this.payload);
+          this.quizResults.push(this.payload);
+          this.$localStorage.set('currentResults', this.quizResults);
           this.$router.replace("/thanks");
         } else {
-          console.log("You can only submit your answer once ",this.$localStorage.get('currentResults'))
-          //TODO change to snakebar
+          this.setSnackbar("error", "Email already used");
         }
       },
       isMailUsed() {
-        const currentResultsObject = this.$localStorage.get('currentResults');
-        return currentResultsObject !== null /*&& currentResultsObject.findIndex(entry => entry.email === this.email) !== -1 ? true : false;*/
-
-        //TODO fix this validation...
+        return this.quizResults.findIndex(entry => entry.email === this.email) !== -1 ? true : false;
+      },
+      setSnackbar(type, message) {
+        this.snackbarType = type;
+        this.snackbarContent = message;
+        setTimeout(() => {
+          this.snackbarContent = ""
+        },5000)
       },
     },
     data() {
       return {
+        answering: false,
         name: '',
         email: '',
         answer: '',
+        snackbarContent: '',
+        quizResults: [],
+        countdown: 100,
+        snackbarType: "error",
+        stepper: 1,
         rules: {
           required: (value) => !!value || 'Required.',
           email: (value) => {
             const pattern = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
             return pattern.test(value) || 'Invalid e-mail.'
           },
-          answer:(value) => value.length > 1 || 'Answer cannot be empty',
+          answer:(value) => value.length > 1 || 'Hint: The answer is longer than that',
           name:(value) => value.length > 5 && value.length < 50 || 'Name must be between 5 to 50 chars'
         }        
       }
     },
-    /*validations: {
-      name: {
-        between: between(5, 50)
-      },
-      email: {
-        required,
-      },
-      answer: {
-        required,
-        minLength: minLength(1)
-      },      
-    }, */   
-
   }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-h1, h2 {
-  font-weight: normal;
+#gist {
+  height:250px;
 }
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
+#gist > p {
+  display:none;
 }
 </style>
