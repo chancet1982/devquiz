@@ -4,10 +4,14 @@
       <v-layout column align-center>
         <v-flex xs12>
           <v-card color="white" class="mb-5">
-            <v-card-title>
-              <h3 class="headline mb-0">Look at the awesome results we've got!</h3>
+            <v-card-title class="primary">
+              <h3 class="headline mb-0 white--text">Overview of the results</h3>
             </v-card-title>
             <v-card-text>
+              <v-switch
+                :label="filterIncorrect === true ? 'Correct results only' : 'All Results'"
+                v-model="filterIncorrect"
+              />
               <v-text-field
                 append-icon="search"
                 label="Search"
@@ -18,18 +22,18 @@
               ></v-text-field>
               <v-data-table
                   v-bind:headers="headers"
-                  v-bind:items="quizResults"
+                  v-bind:items="availableResults"
                   v-bind:search="search"
                 >
                 <template slot="items" slot-scope="props">
-                  <td :class="{ correct: props.item.isAnswerCorrect}">{{ props.item.name }}</td>
-                  <td :class="{ correct: props.item.isAnswerCorrect}">{{ props.item.email }}</td>
-                  <td :class="{ correct: props.item.isAnswerCorrect}">{{ props.item.answer }}</td>
-                  <td :class="{ correct: props.item.isAnswerCorrect}"><v-icon v-if="props.item.isAnswerCorrect" color="green">check</v-icon> <v-icon v-else color="red">clear</v-icon></td>
-                  <td :class="{ correct: props.item.isAnswerCorrect}">{{ props.item.timeLeft }}</td>
-                  <td :class="{ correct: props.item.isAnswerCorrect}">
+                  <td :class="getClass(props.item.isAnswerCorrect)">{{ props.item.name }}</td>
+                  <td :class="getClass(props.item.isAnswerCorrect)">{{ props.item.email }}</td>
+                  <td :class="getClass(props.item.isAnswerCorrect)">{{ props.item.answer }}</td>
+                  <td :class="getClass(props.item.isAnswerCorrect)"><v-icon v-if="props.item.isAnswerCorrect" color="green">check</v-icon> <v-icon v-else color="red">clear</v-icon></td>
+                  <td :class="getClass(props.item.isAnswerCorrect)">{{ props.item.timeLeft }}</td>
+                  <td :class="getClass(props.item.isAnswerCorrect)">
                     <v-btn icon class="mx-0" @click="deleteItem(props.index)">
-                      <v-icon color="red">delete</v-icon>
+                      <v-icon color="white">delete</v-icon>
                     </v-btn>
                   </td>
                 </template>
@@ -58,14 +62,23 @@
       },
     },    
     methods: {
+      getClass(value) {
+        return value ? "green" : "error";
+      },
       deleteItem(index) {
         this.quizResults.splice(index, 1);
         this.$localStorage.set('currentResults', this.quizResults);
       },
     },
+    computed: {
+      availableResults() {
+        return this.filterIncorrect ? this.quizResults.filter(result => result.isAnswerCorrect === true) : this.quizResults;
+      }
+    },
     data() {
       return {
         search: '',
+        filterIncorrect: true,
         headers: [
           { text: 'Name', value: 'name', align: 'left' },
           { text: 'Email', value: 'email', align: 'left' },
@@ -82,7 +95,5 @@
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-.correct {
-  background-color: seagreen;
-}
+
 </style>

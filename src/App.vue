@@ -1,9 +1,11 @@
 <template>
   <v-app>
     <v-content>
-      <v-container class="text-xs-center">
-        <img src="./Assets/Logo.png" />
-        <router-view />
+      <v-container fluid class="fill-height primary">
+        <v-layout row wrap>
+          <v-flex xs12 class="text-md-center pt-1"><img src="./Assets/Logo.png" /></v-flex>
+          <v-flex xs12><router-view /></v-flex>
+        </v-layout>
       </v-container>
     </v-content>
   </v-app>

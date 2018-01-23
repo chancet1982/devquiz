@@ -6,10 +6,16 @@ import router from './router'
 import Vuetify from 'vuetify'
 import 'vuetify/dist/vuetify.min.css'
 import VueLocalStorage from 'vue-localstorage'
-import Vuelidate from 'vuelidate'
-Vue.use(Vuelidate)
 Vue.use(VueLocalStorage)
-Vue.use(Vuetify)
+Vue.use(Vuetify, {
+  theme: {
+    primary: 'rgb(49, 146, 179)',
+    secondary: 'rgb(231, 100, 37)',
+    green: 'rgb(77, 184, 87)',
+    error: 'rgb(197, 51, 60)',
+    yellow: 'rgb(239, 176, 49)'
+  }
+});
 
 Vue.config.productionTip = false
 

@@ -2,12 +2,16 @@
   <v-container fluid>
     <v-slide-y-transition mode="out-in">
       <v-layout column align-center>
-        <v-flex xs8>
-          <v-subheader>Thank you for answering</v-subheader>
-          <v-subheader>Redirecting in {{this.counter}}</v-subheader>
-        </v-flex>
-        <v-flex>
-          <v-btn color="info" replace to="/">Cant wait</v-btn>
+        <v-flex xs12>
+          <v-card class="pa-5">
+            <v-card-title>
+              <h3 class="headline text-md-center">Thank you for your answer</h3>
+            </v-card-title>
+            <v-card-text class="text-md-center">
+              <p>Redirecting in {{this.counter}}</p>
+              <v-btn color="secondary" round replace to="/">Cant wait</v-btn>
+            </v-card-text>
+          </v-card>
         </v-flex>
       </v-layout>
     </v-slide-y-transition>

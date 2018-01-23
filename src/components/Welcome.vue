@@ -7,7 +7,7 @@
             <p>https://gist.github.com/chancet1982/6b79e2bde10ce599e59db109c2920519.js</p>
           </VEmbed>
         </v-flex>
-        <v-flex xs12>
+        <v-flex xs12 v-if="countdown > 0">
           <v-stepper v-model="stepper">
             <v-stepper-header>
               <v-stepper-step step="1" :complete="this.answer !== ''">Your answer</v-stepper-step>
@@ -29,6 +29,7 @@
                           ref="answer"
                           :disabled="countdown === 0"
                           :rules="[rules.required, rules.answer]"
+                          @keyup.enter="stepper = 2"
                         ></v-text-field>
                       </v-flex>
                       <v-flex xs4 class="text-xs-center">
@@ -37,14 +38,14 @@
                           v-bind:width="15"
                           v-bind:rotate="270"
                           v-bind:value="countdown"
-                          color="info"
+                          :color="getCountdownColor()"
                         >
                           {{countdown}}
                         </v-progress-circular>              
                       </v-flex>
                     </v-layout>
                 </v-card>
-                <v-btn color="info" @click.native="stepper = 2">Continue</v-btn>
+                <v-btn round :disabled="this.answer === ''" color="primary" @click.native="stepper = 2">Continue</v-btn>
               </v-stepper-content>
               <v-stepper-content step="2">
                 <v-card color="white" class="mb-5" height="200px">
@@ -68,21 +69,28 @@
                       {{snackbarContent}}
                     </v-alert>
                 </v-card>
-                <v-btn :disabled="!this.isFormValid" color="success" @click="submit()">Submit</v-btn>                  
+                <v-btn round :disabled="!this.isFormValid" color="success" @click="submit()">Submit</v-btn>                  
               </v-stepper-content>
             </v-stepper-items>
           </v-stepper>          
         </v-flex>
+        <v-flex xs12 v-else class="text-md-center">
+          Time is up.
+        </v-flex>
       </v-layout>
       <v-layout column wrap v-show="!answering" align-center transition="slide-x-transition">
-        <v-card color="white" class="mb-5">
-          <v-card-title>
-            <h1>Answer and win a Raspbarry Pi</h1>
+        <v-card color="green" class="pa-5">
+          <v-card-title class="text-md-center">
+            <h3 class="headline white--text cardTitle mb-0">Answer and win a Raspbarry Pi</h3>
           </v-card-title>
           <v-card-text>
-              <p>Clicking the button below youll be presented with some code.</p>
-              <p>You'll have one minute to answer</p>
-              <v-btn color="info" @click="start()">Got it, lets go</v-btn>
+            <div class="white--text text-md-center">
+              Clicking the button below you'll be presented with some JavaScript code. <br/>
+              The fastest to answer correctly wins a new Raspbarry Pi<br/>
+            </div>
+            <div class="text-md-center pt-4">
+              <v-btn color="white" round @click="start()">Got it, lets go</v-btn>
+            </div>
           </v-card-text>
         </v-card>
       </v-layout>
@@ -137,6 +145,9 @@
       }
     },
     methods: {
+      getCountdownColor() {
+        return this.countdown > 50 ? "green" : this.countdown > 25 ? "yellow" : "error";
+      },
       start() {
         this.answering = true;
         setTimeout(() => {
@@ -150,7 +161,7 @@
             return null;
           }
           this.countdown --;
-        }, 1000);
+        }, 100);
       },
       submit() {
         if (this.isMailUsed() == false) {
@@ -204,5 +215,10 @@
 }
 #gist > p {
   display:none;
+}
+
+.cardTitle {
+  display: block;
+  width: 100%;
 }
 </style>
