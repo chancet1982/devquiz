@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Welcome from '@/components/Welcome'
+import Start from '@/components/Start'
 import Thanks from '@/components/Thanks'
 import Results from '@/components/Results'
 
@@ -14,6 +15,11 @@ export default new Router({
       name: 'Welcome',
       component: Welcome
     },
+    {
+      path: '/start',
+      name: 'Start',
+      component: Start
+    },    
     {
       path: '/thanks',
       name: 'Thanks',

@@ -29,6 +29,7 @@
                   <td :class="getClass(props.item.isAnswerCorrect)">{{ props.item.name }}</td>
                   <td :class="getClass(props.item.isAnswerCorrect)">{{ props.item.email }}</td>
                   <td :class="getClass(props.item.isAnswerCorrect)">{{ props.item.answer }}</td>
+                  <td :class="getClass(props.item.isAnswerCorrect)">{{ props.item.expectedAnswer }}</td>
                   <td :class="getClass(props.item.isAnswerCorrect)"><v-icon v-if="props.item.isAnswerCorrect" color="green">check</v-icon> <v-icon v-else color="red">clear</v-icon></td>
                   <td :class="getClass(props.item.isAnswerCorrect)">{{ props.item.timeLeft }}</td>
                   <td :class="getClass(props.item.isAnswerCorrect)">
@@ -83,6 +84,7 @@
           { text: 'Name', value: 'name', align: 'left' },
           { text: 'Email', value: 'email', align: 'left' },
           { text: 'Answer ', value: 'answer', align: 'left' },
+          { text: 'expected answer ', value: 'expectedAnswer', align: 'left' },
           { text: 'Answered correctly?', value: 'iscorrect', align: 'left' },
           { text: 'Time left', value: 'timeleft'}
         ],        
