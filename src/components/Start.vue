@@ -1,6 +1,9 @@
 <template>
-  <v-container fluid fill-height class="bg--graphics">>
-    <v-layout row wrap transition="slide-x-transition">
+  <v-container class="fill-height">
+    <v-layout column>
+      <v-flex xs12 class="text-md-center pt-1 flex-0">
+        <img src="../assets/logo.svg" height="150" width="200" />        
+      </v-flex>
       <v-flex xs12 v-show="countdown !== 0">
         <VEmbed id="gist1" v-if="gist === 1" :options="{ emoji: false }">
           <p>https://gist.github.com/chancet1982/3619681e6305c50ed01fab709f6ab8d3.js</p>
@@ -219,6 +222,10 @@
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+.flex-0 {
+  flex:0;
+}
+
 #gist1,
 #gist2,
 #gist3{
